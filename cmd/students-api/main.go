@@ -1,8 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/kartikeywariyal/students-api-Go-/internal/config"
 )
@@ -24,9 +29,21 @@ func main() {
 	}
 	fmt.Println(cfg.HttpServer.Address)
 	fmt.Println("Starting server on", cfg.HttpServer.Address)
-	err := server.ListenAndServe()
+
+	done := make(chan os.Signal, 1)
+	signal.Notify(done, os.Interrupt, syscall.SIGTERM)
+
+	go func() {
+		server.ListenAndServe()
+	}()
+	<-done
+	fmt.Println("Shutting down server...")
+	ctx, cancel := context.WithTimeout(context.Back ground(), 100*time.Second)
+	defer cancel()
+	err := server.Shutdown(ctx)
 	if err != nil {
-		panic("server failed to start: " + err.Error())
+		panic("server failed to shut down: " + err.Error())
 	}
+	fmt.Println("Server stopped")
 
 }
