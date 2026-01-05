@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/kartikeywariyal/students-api-Go-/internal/config"
+	"github.com/kartikeywariyal/students-api-Go-/internal/http/handlers/student"
 )
 
 func main() {
@@ -17,9 +18,8 @@ func main() {
 
 	router := http.NewServeMux()
 
-	router.HandleFunc("GET  /", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "Welcome to the Students API")
-	})
+	router.HandleFunc("POST /api/students", student.New())
+
 	router.HandleFunc("GET /job", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, "This is ur first JOb")
 	})
@@ -38,7 +38,7 @@ func main() {
 	}()
 	<-done
 	fmt.Println("Shutting down server...")
-	ctx, cancel := context.WithTimeout(context.Back ground(), 100*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 	defer cancel()
 	err := server.Shutdown(ctx)
 	if err != nil {
