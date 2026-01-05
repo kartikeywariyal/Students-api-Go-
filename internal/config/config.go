@@ -12,10 +12,10 @@ type HttpServer struct {
 	Address string
 }
 type Config struct {
-	Env         string
-	StoragePath string
-	Port        string
-	HttpServer  HttpServer
+	Env         string     `yaml:"env"`
+	StoragePath string     `yaml:"storagepath"`
+	Port        string     `yaml:"port"`
+	HttpServer  HttpServer `yaml:"httpserver"`
 }
 
 func MustLoad() *Config {
