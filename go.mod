@@ -1,4 +1,4 @@
-module github.com/kartikeywariyal/students-api
+module github.com/kartikeywariyal/students-api-Go-
 
 go 1.25.5
 

@@ -2,6 +2,8 @@ package config
 
 import (
 	"os"
+	"path/filepath"
+	"runtime"
 
 	"gopkg.in/yaml.v3"
 )
@@ -17,22 +19,34 @@ type Config struct {
 }
 
 func MustLoad() *Config {
-	var configPath string
-	configPath = os.Getenv("CONFIG_PATH")
+	configPath := os.Getenv("CONFIG_PATH")
 	if configPath == "" {
-		configPath = "config/local.yaml"
+		root, err := rootDir()
+		if err != nil {
+			panic("cannot resolve project root: " + err.Error())
+		}
+		configPath = filepath.Join(root, "config", "local.yaml")
 	}
 
 	data, err := os.ReadFile(configPath)
 	if err != nil {
 		panic("cannot read config: " + err.Error())
 	}
-
 	var cfg Config
 	err = yaml.Unmarshal(data, &cfg)
 	if err != nil {
 		panic("cannot parse config: " + err.Error())
 	}
-
 	return &cfg
+}
+
+func rootDir() (string, error) {
+	_, file, _, ok := runtime.Caller(0)
+	if !ok {
+		return "", os.ErrInvalid
+	}
+
+	// internal/config -> project root
+	root := filepath.Clean(filepath.Join(filepath.Dir(file), "..", ".."))
+	return root, nil
 }
