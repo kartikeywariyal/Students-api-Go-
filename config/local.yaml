@@ -1,0 +1,6 @@
+env="dev"
+PORT: 8080
+Storage_Path:"storage/storage.db"
+http_server:
+  host: "localhost"
+  port: PORT
